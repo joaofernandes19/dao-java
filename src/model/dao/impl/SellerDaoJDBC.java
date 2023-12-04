@@ -3,6 +3,7 @@ package model.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import db.DB;
@@ -31,9 +32,7 @@ public class SellerDaoJDBC implements SellerDao {
 	}
 
 	@Override
-	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
-		
+	public void deleteById(Integer id) {	
 	}
 
 	@Override
@@ -49,16 +48,11 @@ public class SellerDaoJDBC implements SellerDao {
 			st.setInt(1, id);
 			rs = st.executeQuery();
 			if (rs.next()) {
-				Department dp = new Department();
+				Department dp = instantiateDepartment(rs);
 				dp.setId(rs.getInt("DepartmentId"));
 				dp.setName(rs.getString("DepName"));
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-			    obj.setDepartment(dp);
+				Seller obj = instantiateSeller(rs, dp);
+				
 				return obj;
 			}
 			return null;
@@ -71,6 +65,22 @@ public class SellerDaoJDBC implements SellerDao {
 		}
 	}
 
+	private Seller instantiateSeller(ResultSet rs, Department dp) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+	    obj.setDepartment(dp);
+		return obj;
+	}
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dp = new Department();
+		dp.setId(rs.getInt("DepartmentId"));
+		dp.setName(rs.getString("DepName"));
+		return dp;
+	}
 	@Override
 	public List<Seller> findAll() {
 		// TODO Auto-generated method stub
